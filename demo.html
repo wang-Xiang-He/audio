@@ -1314,37 +1314,39 @@ function audioDetection(config) {
 
 
   <script>
-    const transcriptElement = document.getElementById('transcript');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-us';
-
-      let result = [];
-      recognition.onresult = event => {
-        console.log('Speech recognition results:', event.results);
-        const len = event.results.length;
-
-        if (event.results[len - 1].isFinal) {
-          // 如果是最终结果，只显示最后的转录内容
-          if (event.results[len - 1][0].transcript) {
-            const latestTranscript = event.results[len - 1][0].transcript;
-            transcriptElement.textContent = 'SpeechRecognition: ' + latestTranscript;
-          }
+     try {
+        const transcriptElement = document.getElementById('transcript');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'en-us';
+      
+          let result = [];
+          recognition.onresult = event => {
+            console.log('Speech recognition results:', event.results);
+            const len = event.results.length;
+          
+            if (event.results[len - 1].isFinal) {
+              if (event.results[len - 1][0].transcript) {
+                const latestTranscript = event.results[len - 1][0].transcript;
+                transcriptElement.textContent = 'SpeechRecognition: ' + latestTranscript;
+              }
+            } else {
+              const data = event.results[len - 1][0].transcript;
+              transcriptElement.textContent = 'SpeechRecognition: ' + data;
+            }
+          };
+      
+          recognition.start();
         } else {
-          // 如果是中间结果，显示当前的转录内容
-          const data = event.results[len - 1][0].transcript;
-          transcriptElement.textContent = 'SpeechRecognition: ' + data;
+          alert("Speech recognition not supported in this browser.");
         }
-      };
-
-      recognition.start();
-    } else {
-      console.log("Speech recognition not supported in this browser.");
-    }
+      } catch (error) {
+        alert('An error occurred: ' + error.message);
+      }
   </script>
 </body>
 
